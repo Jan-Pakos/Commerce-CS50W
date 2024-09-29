@@ -1,0 +1,39 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h2 class="mb-4 text-center">Create New Listing</h2>
+
+        <form action="{% url 'create' %}" method="POST">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" name="title" class="form-control" id="title" placeholder="Enter a title" required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea name="description" class="form-control" id="description" rows="3" placeholder="Enter a description" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="imgURL" class="form-label">Image URL</label>
+                <input type="url" name="imgURL" class="form-control" id="imgURL" placeholder="Enter an Image URL" required>
+            </div>
+            <div class="mb-3">
+                <label for="price" class="form-label">Price</label>
+                <input type="number" min="50" name="price" class="form-control" id="price" placeholder="Enter a price" min="0" step="0.01" required>
+            </div>
+            <div class="mb-3">
+                <label for="category" class="form-label">Category</label>
+                <select class="form-select" name="category" id="category" required>
+                    <option selected disabled>Select a category</option>
+                    {% for cate in categories %}
+                        <option value="{{ cate }}">{{ cate }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn btn-primary btn-block" style="background-color: #286ea7; width: 150px;">Save Listing</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

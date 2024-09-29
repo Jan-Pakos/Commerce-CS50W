@@ -1,0 +1,91 @@
+{% extends "auctions/layout.html" %}
+{% block body %}
+<div class="container">
+        {% if update %}
+        <div class="alert alert-success" role="alert">
+            {{ message }}
+        </div>
+        {% else %}
+        <div class="alert alert-warning" role="alert">
+            {{ message }}
+          </div>
+          {% endif %}
+</div>
+<div class="container my-4">
+    <div class="row mb-3">
+        <div class="col text-center">
+            {% if user.is_authenticated %}
+
+                {% if isbidowner and listing.active %}
+                    <form action="{% url 'endauction' id=listing.id %}" method="POST">
+                    {% csrf_token %}
+                        <button type="submit" class="btn btn-secondary btn-lg">End Auction</button>
+                    </form>
+                {% endif %}
+                {% if islistinginwatchlist %}
+                    <form action="{% url 'removewatchlist' id=listing.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-secondary btn-lg">Remove from Watchlist</button>
+                    </form>
+                {% else %}
+                    <form action="{% url 'addtowatchlist' id=listing.id %}" method="POST">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-warning btn-lg">Add to Watchlist</button>
+                    </form>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+    
+    {% if not listing.active and user == listing.price.user %}
+    <div class="alert alert-primary" role="alert">
+        You won the auction!
+      </div>
+    {% endif %}
+
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <img src="{{ listing.imgURL }}" class="card-img-top img-fluid" alt="Product Image" style="max-height: 400px; object-fit: cover;">
+                <div class="card-body text-center">
+                    <h5 class="card-title">{{ listing.title }}</h5>
+                    <p class="card-text">{{ listing.description }}</p>
+                    <p class="price h4 text-success">Latest Bid: € {{ listing.price.bid }}</p>
+                    <p class="category text-muted">Category: {{ listing.category }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% if user.is_authenticated %}
+                <form action="{% url 'newbid' id=listing.id %}" method="POST" class="mb-4">
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        <input type="number" min="50" name="newbid" class="form-control" placeholder="Add new bid">
+                        <button type="submit" class="btn btn-primary" style="background-color: #286ea7;">Submit</button>
+                    </div>
+                </form>
+            {% endif %}
+    <div class="row mt-5">
+        <div class="col-md-8 mx-auto">
+            <h3>Comments</h3>
+            {% if user.is_authenticated %}
+                <form action="{% url 'addcomment' id=listing.id %}" method="POST" class="mb-4">
+                    {% csrf_token %}
+                    <div class="input-group mb-3">
+                        <input type="text" name="addcomment" class="form-control" placeholder="Add new comment">
+                        <button type="submit" class="btn btn-primary" style="background-color: #286ea7;">Submit</button>
+                    </div>
+                </form>
+            {% endif %}
+            <ul class="list-group">
+                {% for comment in comments %}
+                    <li class="list-group-item" style="border-color: rgb(46, 46, 46); ">
+                        <h6 class="mb-1"><strong>{{ comment.owner }} says:</strong></h6>
+                        <p class="mb-0">{{ comment.comment }}</p>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
